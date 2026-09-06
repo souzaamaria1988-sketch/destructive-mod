@@ -34,21 +34,14 @@ public class DestructiveToolItem extends Item {
         World world = context.getWorld();
         BlockPos pos = context.getBlockPos();
         PlayerEntity player = context.getPlayer();
-        
         if (!world.isClient() && player != null) {
-            if (player.getItemCooldownManager().isCoolingDown(this)) {
-                return ActionResult.PASS;
-            }
-            
+            if (player.getItemCooldownManager().isCoolingDown(this)) return ActionResult.PASS;
             ServerWorld serverWorld = (ServerWorld) world;
             addToDestructionQueue(serverWorld, pos, radius);
-            
             player.getItemCooldownManager().set(this, cooldown);
-            
             serverWorld.playSound(null, pos, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 1.0f, 1.0f);
             spawnParticles(serverWorld, pos);
         }
-        
         return ActionResult.SUCCESS;
     }
 
@@ -56,35 +49,16 @@ public class DestructiveToolItem extends Item {
         for (int x = -radius; x <= radius; x++) {
             for (int y = -radius; y <= radius; y++) {
                 for (int z = -radius; z <= radius; z++) {
-                    if (x*x + y*y + z*z <= radius*radius) {
-                        destructionQueue.add(center.add(x, y, z));
-                    }
+                    if (x*x + y*y + z*z <= radius*radius) destructionQueue.add(center.add(x, y, z));
                 }
             }
         }
     }
 
     private void spawnParticles(ServerWorld world, BlockPos pos) {
-        switch (particleType) {
-            case "flame":
-                for (int i = 0; i < 50; i++) {
-                    world.spawnParticles(ParticleTypes.FLAME, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.5, 0.5, 0.5, 0.1);
-                }
-                break;
-            case "portal":
-                for (int i = 0; i < 50; i++) {
-                    world.spawnParticles(ParticleTypes.PORTAL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.5, 0.5, 0.5, 0.1);
-                }
-                break;
-            case "electric":
-                for (int i = 0; i < 50; i++) {
-                    world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.5, 0.5, 0.5, 0.1);
-                }
-                break;
-            default:
-                for (int i = 0; i < 50; i++) {
-                    world.spawnParticles(ParticleTypes.CLOUD, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.5, 0.5, 0.5, 0.1);
-                }
+        for (int i = 0; i < 50; i++) {
+            ParticleTypes pt = particleType.equals("flame") ? ParticleTypes.FLAME : particleType.equals("portal") ? ParticleTypes.PORTAL : particleType.equals("electric") ? ParticleTypes.ELECTRIC_SPARK : ParticleTypes.CLOUD;
+            world.spawnParticles(pt, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.5, 0.5, 0.5, 0.1);
         }
     }
 
@@ -94,9 +68,7 @@ public class DestructiveToolItem extends Item {
             int blocksToDestroy = Math.min(10, destructionQueue.size());
             for (int i = 0; i < blocksToDestroy; i++) {
                 BlockPos pos = destructionQueue.poll();
-                if (pos != null) {
-                    world.breakBlock(pos, true);
-                }
+                if (pos != null) world.breakBlock(pos, true);
             }
             ticksSinceLastDestruction = 0;
         }
