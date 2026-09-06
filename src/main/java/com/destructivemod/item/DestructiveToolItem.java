@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.sound.SoundCategory;
@@ -56,9 +57,21 @@ public class DestructiveToolItem extends Item {
     }
 
     private void spawnParticles(ServerWorld world, BlockPos pos) {
+        ParticleEffect effect = ParticleTypes.CLOUD;
+        if ("flame".equals(particleType)) {
+            effect = ParticleTypes.FLAME;
+        } else if ("portal".equals(particleType)) {
+            effect = ParticleTypes.PORTAL;
+        } else if ("electric".equals(particleType)) {
+            effect = ParticleTypes.ELECTRIC_SPARK;
+        } else if ("snow".equals(particleType)) {
+            effect = ParticleTypes.SNOWFLAKE;
+        } else if ("dust".equals(particleType)) {
+            effect = ParticleTypes.LARGE_SMOKE;
+        }
+        
         for (int i = 0; i < 50; i++) {
-            ParticleTypes pt = particleType.equals("flame") ? ParticleTypes.FLAME : particleType.equals("portal") ? ParticleTypes.PORTAL : particleType.equals("electric") ? ParticleTypes.ELECTRIC_SPARK : ParticleTypes.CLOUD;
-            world.spawnParticles(pt, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.5, 0.5, 0.5, 0.1);
+            world.spawnParticles(effect, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.5, 0.5, 0.5, 0.1);
         }
     }
 
