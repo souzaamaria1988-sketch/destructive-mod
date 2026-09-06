@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "destructivemod",
+  "version": "1.0.0",
+  "name": "Destructive Mod",
+  "description": "${TOOLS.length} destructive tools for Minecraft",
+  "authors": [
+    "Valentin"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.destructivemod.DestructiveMod"
+    ]
+  },
+  "mixins": [
+    "modid.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.21",
+    "minecraft": "~1.20.1",
+    "java": ">=17",
+    "fabric": "*"
+  }
+}
